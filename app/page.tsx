@@ -29,6 +29,20 @@ export default function Home() {
   useEffect(() => {
     let disposed = false;
     const initialization = new AbortController();
+    
+    // Check for reset parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldReset = urlParams.get('reset') === 'true';
+    if (shouldReset) {
+      try {
+        localStorage.removeItem('danube-placement-v2');
+        localStorage.removeItem('danube-placement-v1');
+        console.log('Placement reset to defaults');
+      } catch (e) {
+        console.warn('Could not reset placement:', e);
+      }
+    }
+    
     createMapEngine('globe', {
       status: s => { if (!disposed) setStatus(s); },
       placement: p => { if (!disposed) setPlacement({ ...p }); },
@@ -143,7 +157,7 @@ export default function Home() {
       <div className="link-proportions"><label htmlFor="link-proportions"><Link2 size={15}/> Keep proportions</label><Switch id="link-proportions" checked={linked} onCheckedChange={setLinked}/></div>
       <div className="resize-controls">{([{key:'widthScale',dimension:'width',label:'Width',color:'x-axis'},{key:'depthScale',dimension:'depth',label:'Depth',color:'y-axis'},{key:'heightScale',dimension:'height',label:'Height',color:'z-axis'}] as const).map(axis=><div className={`axis-control ${axis.color}`} key={axis.key}><div className="axis-heading"><span id={`${axis.key}-label`}>{axis.label}</span><NumberField label={`${axis.label} in meters`} hideLabel value={MODEL_SIZE[axis.dimension]*placement.scale*placement[axis.key]} digits={2} step={.1} min={MODEL_SIZE[axis.dimension]*placement.scale*.001} max={MODEL_SIZE[axis.dimension]*placement.scale*1000} disabled={!ready} onChange={v=>engine.current?.setPlacement(resizePlacement(placement,axis.key,v/(MODEL_SIZE[axis.dimension]*placement.scale),linked))} suffix="m"/></div><Slider aria-labelledby={`${axis.key}-label`} value={[placement[axis.key]]} min={.001} max={Math.max(3,placement[axis.key])} step={.001} disabled={!ready} onValueChange={v=>engine.current?.setPlacement(resizePlacement(placement,axis.key,Array.isArray(v)?v[0]:v,linked))}/></div>)}</div>
       <p className="placement-note">Changes save automatically on this browser and restore when you reopen the viewer.</p>
-      <div className="panel-footer"><span aria-live="polite"><Check size={13}/>{saveState}</span><button className="text-button" disabled={!ready} onClick={() => { engine.current?.reset(); setMoving(false); }}><RotateCcw size={14}/> Reset</button></div></div>
+      <div className="panel-footer"><span aria-live="polite"><Check size={13}/>{saveState}</span><div className="button-group"><button className="text-button" disabled={!ready} onClick={() => { engine.current?.reset(); setMoving(false); }}><RotateCcw size={14}/> Reset</button><button className="text-button" disabled={!ready} onClick={() => { try { localStorage.removeItem('danube-placement-v2'); localStorage.removeItem('danube-placement-v1'); window.location.reload(); } catch(e) { setError('Could not clear saved settings'); } }} title="Clear all saved settings and reload">Clear All</button></div></div></div>
     </aside>
     {moving&&<output className="placement-banner"><MapPin size={17}/> Click the map to move the model<button aria-label="Cancel placement" onClick={() => {setMoving(false);engine.current?.setMoving(false);}}><X size={17}/></button></output>}
     {error&&<div className="error-banner" role="alert"><span>{error}</span><button onClick={() => window.location.reload()}>Retry</button></div>}
