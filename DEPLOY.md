@@ -1,6 +1,36 @@
-# 🚀 Deploy AL Danube to Vercel
+# 🚀 Deploy AL Danube
 
-## Quick Deploy (Recommended)
+## Option 1: GitHub Pages (Free & Automatic)
+
+### Quick Setup:
+
+1. **Enable GitHub Pages**
+   - Go to: https://github.com/MohamedMamdouhElmetwaly/AL-Danube/settings/pages
+   - Under **Source**, select **GitHub Actions**
+   - Save changes
+
+2. **Push Your Code**
+   ```bash
+   git add .
+   git commit -m "Configure GitHub Pages"
+   git push origin main
+   ```
+
+3. **Wait for Deployment**
+   - Go to: https://github.com/MohamedMamdouhElmetwaly/AL-Danube/actions
+   - Watch the deployment workflow (takes 2-3 minutes)
+   - Your site will be live at:
+     **https://mohamedmamdouhelmetwaly.github.io/AL-Danube/**
+
+### ✅ Benefits:
+- Completely free
+- Automatic deployment on every push
+- No external account needed
+- Fast global CDN
+
+---
+
+## Option 2: Vercel (Recommended for Production)
 
 1. **Go to Vercel**
    - Visit: https://vercel.com/new
@@ -23,7 +53,7 @@
    - Wait 2-3 minutes
    - Done! You'll get a live URL like: `https://al-danube.vercel.app`
 
-## Alternative: Deploy to Netlify
+## Option 3: Netlify
 
 1. **Go to Netlify**
    - Visit: https://app.netlify.com/start
@@ -38,7 +68,7 @@
    - Click "Deploy site"
    - Get your live URL
 
-## Alternative: Deploy to Cloudflare Pages
+## Option 4: Cloudflare Pages
 
 1. **Go to Cloudflare Pages**
    - Visit: https://dash.cloudflare.com/
