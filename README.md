@@ -1,6 +1,6 @@
 # Al Danube · Riyadh Spatial Viewer
 
-A CesiumJS viewer for the supplied Market AL_DANUBE model at **24.82366291095728 latitude, 46.65565475232994 longitude**.
+A CesiumJS viewer for the supplied Market AL_DANUBE model at **24.82294972 latitude, 46.65425012 longitude**.
 
 ## Run locally
 
@@ -9,22 +9,23 @@ npm install
 npm run dev
 ```
 
-Open the address printed by the development server. An internet connection is required for satellite imagery, street tiles, and place search. CesiumJS and Leaflet are served locally; no Cesium ion token is required.
+Open the address printed by the development server. An internet connection is required for satellite imagery, place labels, and search. CesiumJS and Leaflet are served locally; no Cesium ion token is required.
 
 ## Controls
 
 - **Place model on map:** click a new ground position; Escape cancels.
 - **Arrow buttons:** move exactly one meter east, west, north, or south.
-- **Latitude / Longitude:** enter a position; press Enter or leave the field to apply it.
+- **Latitude / Longitude:** valid edits apply and save immediately as you type. Incomplete or out-of-range entries retain the last valid position.
 - **Rotation:** adjust the heading clockwise around the ground anchor.
-- **Height / Scale:** adjust the model's ground offset and physical scale.
+- **Ground offset / Overall scale:** adjust elevation above the globe and uniform size. Independent width, depth, and height controls accept meters or sliders. Enable **Keep proportions** to resize the three dimensions together. All dimensions save automatically.
 - **Show model:** hide or show the model without changing its placement.
 - **3D / 2D:** switch between an oblique globe and a flat top-down map.
-- **Satellite / Streets:** switch basemaps.
+- **Imagery:** the main map and circular mini map both use Esri satellite imagery.
 - **Search:** search places (biased toward Riyadh) or enter `latitude, longitude`.
 - **Focus / target button:** return to the model. North arrow resets camera heading.
-- **Circular mini map:** view center in blue and model position in orange; click it to navigate.
-- Placement is automatically saved in browser local storage. **Reset** restores the supplied coordinates, 0° heading, 0.25 m ground offset, and scale 1.
+- **Places tab:** labels and clickable markers update after the camera stops. Select a marker or list entry for a popup with its name, category, address, coordinates, and available contact details. Up to 50 places are loaded per view; zoom in for more detail. Arabic names are rendered as complete text to preserve letter shaping.
+- **Circular satellite mini map:** view center in blue and model position in orange; click it to navigate.
+- Placement is automatically saved in browser local storage. **Reset** restores the supplied coordinates, 0° heading, 0.25 m ground offset, and all scales 1.
 
 ## Placement and model
 
@@ -50,5 +51,6 @@ The scaffold's full `npm run lint` currently also reports pre-existing issues in
 - Model: Market AL_DANUBE by sherif shawky. See `public/models/license.txt` for the supplied Sketchfab Standard license and source link.
 - Globe: CesiumJS 1.133.0, https://cesium.com/learn/cesiumjs/ref-doc/.
 - Satellite imagery: Esri World Imagery, with provider credits shown in the viewer.
-- Street and overview tiles: © OpenStreetMap contributors.
-- Place search: ArcGIS World Geocoding Service; queries are sent only when submitted.
+- Overview imagery: Esri World Imagery.
+- Place search and nearby POIs: ArcGIS World Geocoding Service. Text queries are sent on submission; nearby places are requested for the current extent after map movements. Place responses are not stored in browser persistence.
+
