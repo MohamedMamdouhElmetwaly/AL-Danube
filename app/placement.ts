@@ -1,12 +1,12 @@
 export type Placement = { lat:number; lon:number; heading:number; height:number; scale:number; widthScale:number; depthScale:number; heightScale:number };
 export const DEFAULT_PLACEMENT: Placement = {
-  lat: 24.82288653,
-  lon: 46.65389402,
-  heading: 246,
+  lat: 24.82282334,
+  lon: 46.65391380,
+  heading: 245,
   height: 0.25,
   scale: 1,
-  widthScale: 1.9099,  // 834.73m / 437.03m original width
-  depthScale: 0.9382,  // 90.08m / 96.03m original depth
+  widthScale: 1.9310,  // 843.91m / 437.03m original width
+  depthScale: 0.8184,  // 78.59603m / 96.03m original depth
   heightScale: 2.1207  // 53.29m / 25.13m original height
 };
 export const MODEL_SIZE = {width:437.0321671831256,depth:96.03211739534123,height:25.127181715030247};
