@@ -36,3 +36,23 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# development scripts and config files
+scripts/
+*.mjs
+vite.config.ts
+tsconfig.tsbuildinfo
+
+# git helper scripts
+push.bat
+git-push.cmd
+force-push.cmd
+PUSH_INSTRUCTIONS.md
+
+# OpenAI and IDE config
+.openai/
+.oxfmtrc.json
+.oxlintrc.json
+
+# Build info
+tsconfig.tsbuildinfo
