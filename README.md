@@ -2,6 +2,12 @@
 
 An interactive 3D geospatial viewer for the Al Danube market model in Riyadh, Saudi Arabia, built with Next.js and CesiumJS.
 
+## 🌐 Live Demo
+
+**🚀 View Live Application:** [https://mohamedmamdouhelmetwaly.github.io/AL-Danube/](https://mohamedmamdouhelmetwaly.github.io/AL-Danube/)
+
+The project automatically deploys to GitHub Pages when you push to the main branch.
+
 ## 🚀 Features
 
 - **Full-Screen 3D Map** - Immersive satellite imagery view powered by CesiumJS
