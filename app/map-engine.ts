@@ -19,17 +19,16 @@ export async function createMapEngine(container:string, cb:Callbacks, signal?:Ab
   if(signal?.aborted) throw new Error('Initialization cancelled');
   const C=window.Cesium;
   let placement={...DEFAULT_PLACEMENT},visible=false,moving=false,destroyed=false,model:Cesium.Model|undefined;
+  
+  // Always start with default placement, ignore any saved values
+  // This ensures the model always appears at the correct position/size
+  placement = {...DEFAULT_PLACEMENT};
+  
   try {
-    const saved=normalizePlacement(JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'));
-    if(saved) { placement=saved; cb.warning('Saved position restored'); }
-    else {
-      // Apply the new starting point once, preserving existing rotation, height and scale.
-      const previous=normalizePlacement(JSON.parse(localStorage.getItem('danube-placement-v1')||'null'));
-      if(previous) placement={...previous,lat:DEFAULT_PLACEMENT.lat,lon:DEFAULT_PLACEMENT.lon};
-      localStorage.setItem(STORAGE_KEY,JSON.stringify(placement));
-      cb.warning('Position saved');
-    }
-  }catch{cb.warning('Browser saving unavailable');}
+    cb.warning('Using default position');
+  } catch {
+    cb.warning('Browser saving unavailable');
+  }
   const imageryCredit = new C.Credit('Imagery © Esri, Maxar, Earthstar Geographics',true);
   const satellite = new C.UrlTemplateImageryProvider({url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',maximumLevel:19,credit:imageryCredit});
   const viewer=new C.Viewer(container,{animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,selectionIndicator:false,infoBox:false,baseLayer:new C.ImageryLayer(satellite),terrainProvider:new C.EllipsoidTerrainProvider(),scene3DOnly:false,requestRenderMode:true,maximumRenderTimeChange:Infinity,shadows:false,contextOptions:{webgl:{alpha:false,powerPreference:'high-performance'}}});
@@ -49,7 +48,27 @@ export async function createMapEngine(container:string, cb:Callbacks, signal?:Ab
     // depth Z to local X, and height Y to local Z. Scale before heading rotation.
     return C.Matrix4.multiplyByScale(frame,new C.Cartesian3(placement.depthScale,placement.widthScale,placement.heightScale),frame);
   }
-  function setPlacement(next:Placement){if(!validPlacement(next))return;placement={...next};if(model){model.modelMatrix=matrix();model.scale=placement.scale;}anchor.position=new C.ConstantPositionProperty(C.Cartesian3.fromDegrees(placement.lon,placement.lat,.15));try{localStorage.setItem(STORAGE_KEY,JSON.stringify(placement));cb.warning(`Saved at ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}`);}catch{cb.warning('Browser saving unavailable');}cb.placement(placement);viewer.scene.requestRender();}
+  function setPlacement(next:Placement){
+    if(!validPlacement(next))return;
+    placement={...next};
+    if(model){
+      model.modelMatrix=matrix();
+      model.scale=placement.scale;
+    }
+    anchor.position=new C.ConstantPositionProperty(C.Cartesian3.fromDegrees(placement.lon,placement.lat,.15));
+    
+    // Disabled auto-save - model always uses default placement on reload
+    // try{
+    //   localStorage.setItem(STORAGE_KEY,JSON.stringify(placement));
+    //   cb.warning(`Saved at ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}`);
+    // }catch{
+    //   cb.warning('Browser saving unavailable');
+    // }
+    
+    cb.warning('Changes are temporary (resets on reload)');
+    cb.placement(placement);
+    viewer.scene.requestRender();
+  }
   const animationTime=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:.8;
   function flyTo(lat:number,lon:number){viewer.camera.flyTo({destination:C.Cartesian3.fromDegrees(lon,lat,1600),orientation:{heading:0,pitch:-Math.PI/2,roll:0},duration:animationTime});}
   function focus(duration=animationTime){const position=C.Cartesian3.fromDegrees(placement.lon,placement.lat,placement.height);viewer.camera.flyToBoundingSphere(new C.BoundingSphere(position,Math.max(80,(model?.boundingSphere.radius||224))),{duration,offset:new C.HeadingPitchRange(C.Math.toRadians(0),C.Math.toRadians(viewer.scene.mode===C.SceneMode.SCENE2D?-90:-50),Math.max(400,(model?.boundingSphere.radius||224)*3.7))});}
