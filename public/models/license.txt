@@ -1,0 +1,8 @@
+Model Information:
+* title:	Market AL_DANUBE
+* source:	https://sketchfab.com/3d-models/market-al-danube-3151143934b141929d30797787464b46
+* author:	sherif shawky (https://sketchfab.com/shawky.sherif1)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
