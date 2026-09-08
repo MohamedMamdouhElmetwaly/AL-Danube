@@ -11,9 +11,11 @@ function loadScript(src:string) {
 }
 function loadStyle(href:string) { if(!document.querySelector(`link[href="${href}"]`)){const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link);} }
 export async function createMapEngine(container:string, cb:Callbacks, signal?:AbortSignal) {
-  window.CESIUM_BASE_URL='/cesium/';
-  loadStyle('/cesium/Widgets/widgets.css');
-  await loadScript('/cesium/Cesium.js');
+  // Use base path for GitHub Pages
+  const basePath = import.meta.env.BASE_URL || '/';
+  window.CESIUM_BASE_URL = basePath + 'cesium/';
+  loadStyle(basePath + 'cesium/Widgets/widgets.css');
+  await loadScript(basePath + 'cesium/Cesium.js');
   if(signal?.aborted) throw new Error('Initialization cancelled');
   const C=window.Cesium;
   let placement={...DEFAULT_PLACEMENT},visible=false,moving=false,destroyed=false,model:Cesium.Model|undefined;
@@ -98,8 +100,9 @@ export async function createMapEngine(container:string, cb:Callbacks, signal?:Ab
       if(destroyed) return;
       try {
         cb.status('Loading 3D model…');
+        const basePath = import.meta.env.BASE_URL || '/';
         const loaded=await C.Model.fromGltfAsync({
-          url:'/models/market-al-danube.gltf',
+          url: basePath + 'models/market-al-danube.gltf',
           modelMatrix:matrix(),
           scale:placement.scale,
           show:true, // Always show when loading, we control visibility elsewhere

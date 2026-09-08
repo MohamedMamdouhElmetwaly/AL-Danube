@@ -86,10 +86,25 @@ export default function Home() {
         if (Math.abs(lat) > 85 || Math.abs(lon) > 180) throw new Error('Use latitude −85 to 85 and longitude −180 to 180.');
         engine.current?.flyTo(lat, lon); setSearchMessage('Moved to these coordinates.');
       } else {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(term)}`, { signal: controller.signal });
+        // Direct ArcGIS API call for static build
+        const url = new URL('https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates');
+        url.search = new URLSearchParams({ 
+          SingleLine: term, 
+          f: 'json', 
+          outFields: 'Match_addr', 
+          maxLocations: '5', 
+          location: '46.65425012,24.82294972', 
+          outSR: '4326' 
+        }).toString();
+        
+        const response = await fetch(url.toString(), { signal: controller.signal });
         if (!response.ok) throw new Error('Place search is unavailable. You can still enter latitude, longitude.');
-        const data = await response.json() as {results:{name:string;lat:number;lon:number}[]}; setResults(data.results);
-        if (!data.results.length) setSearchMessage('No places found. Try a more specific name or coordinates.');
+        const data = await response.json() as { error?:unknown; candidates?:{ address:string; location:{x:number;y:number} }[] };
+        if (data.error || !Array.isArray(data.candidates)) throw new Error('Place search is unavailable.');
+        
+        const searchResults = data.candidates.map(c => ({ name: c.address, lat: c.location.y, lon: c.location.x }));
+        setResults(searchResults);
+        if (!searchResults.length) setSearchMessage('No places found. Try a more specific name or coordinates.');
       }
     } catch (e) { if (!controller.signal.aborted) setSearchMessage((e as Error).message); }
     finally { if (!controller.signal.aborted) setSearching(false); }
